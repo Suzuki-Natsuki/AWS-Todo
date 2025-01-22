@@ -1,9 +1,11 @@
 package com.dig.toodles
 
+
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -11,13 +13,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 class TodoControllerTest {
     private lateinit var mockMvc: MockMvc
 
-    @BeforeEach
-    fun setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(TodoController()).build()
-    }
+//    @BeforeEach
+//    fun setup() {
+//        mockMvc = MockMvcBuilders.standaloneSetup(TodoController(FakeTodoRepository())).build()
+//    }
 
     @Test
     fun `Todoリストを全て取得する`() {
+        mockMvc = MockMvcBuilders.standaloneSetup(TodoController(FakeTodoRepository())).build()
+
         mockMvc.perform(get("/api/todo"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$").isArray)
@@ -28,5 +32,11 @@ class TodoControllerTest {
             .andExpect(jsonPath("$[1].title").value("じゃがりこを買う"))
             .andExpect(jsonPath("$[1].done").value(false))
             .andExpect(jsonPath("$[1].id").value("e5789998-7644-49c3-ab58-bcb47d002634"))
+    }
+
+    //    @Test
+    fun `Todoリストにアイテムを追加する`() {
+        mockMvc.perform(post("/api/todo"))
+        .andExpect(status().isOk)
     }
 }
