@@ -4,8 +4,7 @@ package com.dig.toodles
 interface TodoRepository {
     fun getAllTodoItem(): List<TodoItem>
     fun getTodoItemById(id: String): TodoItem?
-    fun put(todo: TodoItem)
-//    fun insertItem(todo: TodoItem)
-//    fun update(id: String, todo: TodoItem): TodoItem
-//    fun delete(id: String): Boolean
+    fun post(todo: TodoItem)
+    fun delete(id: String)
+
 }

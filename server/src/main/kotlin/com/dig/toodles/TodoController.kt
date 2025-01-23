@@ -25,6 +25,18 @@ class TodoController(val todoRepository: TodoRepository) {
     @PostMapping("/api/todo")
     @ResponseStatus(HttpStatus.CREATED)
     fun newTodoItem(@RequestBody newItem: TodoItem) {
-        todoRepository.put(newItem)
+        todoRepository.post(newItem)
     }
+
+    @DeleteMapping("/api/todo/{id}")
+    fun deleteItem(@PathVariable id: String) {
+        todoRepository.delete(id)
+    }
+
+    @PatchMapping("/api/todo")
+    fun updateItem(@RequestBody newItem: TodoItem) {
+        todoRepository.post(newItem)
+    }
+
 }
+
