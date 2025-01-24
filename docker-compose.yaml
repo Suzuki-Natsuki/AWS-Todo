@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  localstack:
+    image: localstack/localstack
+    ports:
+       -  "127.0.0.1:4566:4566"
+       -  "127.0.0.1:4510-4559:4510-4559"
+    environment:
+      - DYNAMODB_SHARE_DB=1
+    volumes:
+      - "./init:/etc/localstack/init/ready.d" # 詳細: https://docs.localstack.cloud/references/init-hooks/
+      - "./volume:/var/lib/localstack"
+      - "/Users/user/.rd/docker.sock:/var/run/docker.sock"
+
+#  toodles:
+#    build: .
+#    container_name: toodles-app
+#    environment:
+#      - AWS_DYNAMODB_ENDPOINT=http://localstack:4566  # "localstack" というホスト名でアクセス
+#    depends_on:
+#      - localstack
+
+
+
+
+#  # Spring Boot アプリ(例)を追加
+#  toodles:
+#    build: .
+#    container_name: toodles-app
+#    ports:
+#      - "8080:8080"  # コンテナ内8080をホストの8080へ公開
+#    environment:
+#      # LocalStackのエンドポイントを指す
+#      - AWS_DYNAMODB_ENDPOINT=http://localstack:4566
+#      - AWS_REGION=ap-northeast-1
+#    depends_on:
+#      - localstack
