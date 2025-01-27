@@ -1,12 +1,14 @@
 package com.dig.toodles
 
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
+import java.util.*
 
 @SpringBootTest
 class DynamoDBTodoRepositoryTest {
@@ -14,7 +16,9 @@ class DynamoDBTodoRepositoryTest {
     @Autowired
     lateinit var dynamoDbClient: DynamoDbClient
     private val tableName = "TodoTable"
+/*
 
+*/
     @BeforeEach
     fun setupTable() {
         val listTablesResponse = dynamoDbClient.listTables()
@@ -43,15 +47,102 @@ class DynamoDBTodoRepositoryTest {
     }
 
     @Test
-    fun `postできる`() {
-//        val newItem = TodoItem(title = "ほげ")
-//        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+    fun `We can get all TodoItem`() {
+        val newItem = TodoItem(
+            title = "ほげ",
+            id = UUID.fromString("12345678-1234-1234-1234-123456789ABC"),
+            done = true
+        )
+        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
 
-//        assertEquals(repo.getAllTodoItem().size, 0);
-//        repo.post(newItem)
-//        assertEquals(repo.getAllTodoItem().size, 1);
+        repo.post(newItem)
+        assertEquals(repo.getAllTodoItem()[0].title, "ほげ");
+        assertEquals(repo.getAllTodoItem()[0].id, UUID.fromString("12345678-1234-1234-1234-123456789ABC"));
+        assertEquals(repo.getAllTodoItem()[0].done, true);
+    }
+
+    @Test
+    fun `postとgetAllTodoItemできる`() {
+        val newItem = TodoItem(title = "ほげ")
+        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+
+        assertEquals(repo.getAllTodoItem().size, 0);
+        repo.post(newItem)
+        assertEquals(repo.getAllTodoItem().size, 1);
+    }
+
+    @Test
+    fun `IdでGetできる`() {
+        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+        val newItems = listOf(
+            TodoItem(
+                title = "走る",
+                id = UUID.fromString("119846CB-D49F-4DAA-A129-3C18FC6347E2"),
+                done = true
+            ),
+            TodoItem(
+                title = "歩く",
+                id = UUID.fromString("65B1217A-FFA6-401D-AB73-0BC4DB9A2C0F"),
+                done = true
+            ),
+            TodoItem(
+                title = "寝る",
+                id = UUID.fromString("B12F259C-6D92-473B-AAB7-58694AA15361"),
+                done = true
+            ),
+
+        )
+
+        newItems.forEach {repo.post(it)}
+        assertEquals(repo.getTodoItemById("119846CB-D49F-4DAA-A129-3C18FC6347E2"), newItems[0])
+        assertEquals(repo.getTodoItemById("65B1217A-FFA6-401D-AB73-0BC4DB9A2C0F"), newItems[1])
+        assertEquals(repo.getTodoItemById("B12F259C-6D92-473B-AAB7-58694AA15361"), newItems[2])
 
     }
+
+    @Test
+    fun `Idがないの時Getは大丈夫`() {
+        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+        assertEquals(repo.getTodoItemById(UUID.randomUUID().toString()), null)
+    }
+
+    @Test
+    fun `Idを使ってItemを削除する`() {
+        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+        val newItems = listOf(
+            TodoItem(
+                title = "走る",
+                id = UUID.fromString("119846CB-D49F-4DAA-A129-3C18FC6347E2"),
+                done = true
+            ),
+            TodoItem(
+                title = "歩く",
+                id = UUID.fromString("65B1217A-FFA6-401D-AB73-0BC4DB9A2C0F"),
+                done = true
+            ),
+        )
+        newItems.forEach {repo.post(it)}
+        assertEquals(repo.getAllTodoItem().size, 2)
+
+        repo.delete(newItems[0].id.toString())
+        assertEquals(repo.getAllTodoItem()[0].title, "歩く")
+        assertEquals(repo.getAllTodoItem().size, 1)
+    }
+
+    @Test
+    fun `deleteしたいidがない時も大丈夫`() {
+        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+        val newItem = TodoItem(
+            title = "ほげ",
+            id = UUID.fromString("12345678-1234-1234-1234-123456789ABC"),
+            done = true
+        )
+        repo.post(newItem)
+
+        repo.delete(UUID.randomUUID().toString())
+        assertEquals(repo.getAllTodoItem(), listOf(newItem))
+    }
+
 
     @AfterEach
     fun cleanupTable() {

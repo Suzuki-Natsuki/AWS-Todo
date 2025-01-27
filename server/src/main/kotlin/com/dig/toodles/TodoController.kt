@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException
 class TodoController(val todoRepository: TodoRepository) {
     @GetMapping("/api/todo")
     fun getAllTodoItems(): List<TodoItem> {
+        println("its a GET")
         return todoRepository.getAllTodoItem();
     }
 

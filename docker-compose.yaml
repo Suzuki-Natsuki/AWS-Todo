@@ -10,7 +10,9 @@ services:
     volumes:
       - "./init:/etc/localstack/init/ready.d" # 詳細: https://docs.localstack.cloud/references/init-hooks/
       - "./volume:/var/lib/localstack"
-      - "/Users/user/.rd/docker.sock:/var/run/docker.sock"
+
+
+
 
 #  toodles:
 #    build: .
