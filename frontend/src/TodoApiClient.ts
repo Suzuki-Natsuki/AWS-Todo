@@ -13,14 +13,17 @@ class TodoApiClient {
 
     getAllTodoItems(): Promise<TodoItem[]> {
         return fetch(`${this.apiUrl}/api/todo`)
-            .then(res => res.json()
+            .then(res => res.json())
             .then(json => json.data)
 
         // return Promise.resolve([])
     }
 
-    getTodoItemById(id: string): TodoItem {
-        throw new Error("TODO")
+    getTodoItemById(id: string): Promise<TodoItem> {
+        return fetch(`${this.apiUrl}/api/todo/${id}`)
+            .then(res => res.json())
+            .then(json => json.data)
+            .then(data => data.find(todo => todo.id === id))
     }
 
     newTodoItem(newTodo: TodoItem) {
