@@ -7,9 +7,10 @@ describe("TodoApiClient", () => {
         const todoClient = new TodoApiClient("http://todo-api.example.com")
 
         const actualResponse = await todoClient.getAllTodoItems()
-        expect(actualResponse).toEqual([])
-        expect(fetch).toHaveBeenCalledTimes(1)
-        expect(fetch).toHaveBeenCalledWith("http://todo-api.example.com/api/todo")
+
+        expect(actualResponse).toEqual([]) // 実際のレスポンスが空の配列であることを確認します。
+        expect(fetch).toHaveBeenCalledTimes(1) // fetch関数が1回だけ呼び出されたことを確認します。
+        expect(fetch).toHaveBeenCalledWith("http://todo-api.example.com/api/todo") // fetchが正しいURLで呼び出されたことを確認します。
     });
     it("getTodoItemById", async () => {
         expect(true).toBeFalsy()
