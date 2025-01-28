@@ -23,11 +23,9 @@ function App({apiClient}: AppProps) {
 
   return (
     <>
-      <TodoList todoItems={todoItems} />
+      <TodoList todoItems={todoItems} apiClient={apiClient} setTodoItems={setTodoItems}/>
       <div>
-        <label>New Todo Title
-          <input ref={inputRef}/>
-        </label>
+          <input role={"newTodoItem"} ref={inputRef}/>
         <button
           onClick={() => {
             const createdItem = {id: self.crypto.randomUUID(), title: inputRef.current!.value, done: false}
@@ -39,9 +37,7 @@ function App({apiClient}: AppProps) {
         </button>
       </div>
       <div>
-        <label>ID to delete
-          <input ref={inputIdRef}/>
-        </label>
+          <input role={"idToDelete"} ref={inputIdRef}/>
         <button onClick={() => {
           apiClient.deleteItem(inputIdRef.current!.value).then(() => {
             updateTodoList()
