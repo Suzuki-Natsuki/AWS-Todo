@@ -2,9 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import TodoApiClient from "./TodoApiClient.ts";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <App apiClient={new TodoApiClient("http://localhost:8080")}/>
   </StrictMode>,
 )

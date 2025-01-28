@@ -1,87 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import TodoApiClient, {TodoItem} from "./TodoApiClient.ts";
+import TodoApiClient from "./TodoApiClient.ts";
+import TodoList from "./components/TodoList.tsx";
+import {useEffect, useRef, useState} from "react";
+import {TodoItem} from "./TodoApiClient.ts"
 
-function App() {
-  const [count, setCount] = useState(0)
+interface AppProps {
+  apiClient: TodoApiClient
+}
+function App({apiClient}: AppProps) {
+  const [todoItems, setTodoItems] = useState<TodoItem[]>([])
 
-  const apiClient: TodoApiClient = new TodoApiClient("http://localhost:8080")
-  const newTodo: TodoItem = { id: "15AE4C25-2E9E-4FAA-81A4-BC913A0F3BDF", title: "シマエナガに餌やり", done: false }
-  const updatedTodo: TodoItem = { ...newTodo, done: true }
+  useEffect(() => {
+    updateTodoList()
+  }, []);
+
+  const updateTodoList = () => {
+    apiClient.getAllTodoItems().then((todoItems) => setTodoItems(todoItems))
+  }
+
+  const inputRef = useRef<HTMLInputElement>(null)
+  const inputIdRef = useRef<HTMLInputElement>(null)
 
   return (
     <>
-      <button
-        onClick={async () => {
-          console.log(await apiClient.getAllTodoItems())
-        }}
-      >
-        getAllTodoItems
-      </button>
-      <button
-        onClick={async () => {
-          console.log(await apiClient.newTodoItem(newTodo))
-        }}
-      >
-        newTodoItem
-      </button>
-      <button
-        onClick={async () => {
-          console.log(await apiClient.getTodoItemById(newTodo.id))
-        }}
-      >
-        getTodoItemById
-      </button>
-      <button
-        onClick={async () => {
-          console.log(await apiClient.updateItem(updatedTodo))
-        }}
-      >
-        updateItem
-      </button>
-      <button
-        onClick={async () => {
-          console.log(await apiClient.getAllTodoItems())
-        }}
-      >
-        getAllTodoItems
-      </button>
-      <button
-        onClick={async () => {
-          console.log(await apiClient.deleteItem(newTodo.id))
-        }}
-      >
-        deleteItem
-      </button>
-      <button
-        onClick={async () => {
-          console.log(await apiClient.getAllTodoItems())
-        }}
-      >
-        getAllTodoItems
-      </button>
+      <TodoList todoItems={todoItems} />
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo"/>
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo"/>
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+        <label>New Todo Title
+          <input ref={inputRef}/>
+        </label>
+        <button
+          onClick={() => {
+            const createdItem = {id: self.crypto.randomUUID(), title: inputRef.current!.value, done: false}
+            apiClient.newTodoItem(createdItem).then(() =>{
+              updateTodoList()
+            })
+          }}>
+          SAVE
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div>
+        <label>ID to delete
+          <input ref={inputIdRef}/>
+        </label>
+        <button onClick={() => {
+          apiClient.deleteItem(inputIdRef.current!.value).then(() => {
+            updateTodoList()
+          })
+        }}>DELETE</button>
+      </div>
     </>
   )
 }
