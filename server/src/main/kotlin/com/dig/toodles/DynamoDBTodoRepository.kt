@@ -13,10 +13,11 @@ import java.util.*
 @Primary // このRepositoryが優先される
 class DynamoDBTodoRepository(
     val client: DynamoDbClient,
+    val awsProperties: AwsProperties,
 ) : TodoRepository {
     override fun getAllTodoItem(): List<TodoItem> {
         val scanRequest = ScanRequest.builder()
-            .tableName("TodoTable")
+            .tableName(awsProperties.tableName)
             .build()
 
         return client.scan(scanRequest).items().map(this::mapToTodoItem)
@@ -28,7 +29,7 @@ class DynamoDBTodoRepository(
 
     override fun delete(id: String) {
         val deleteRequest = DeleteItemRequest.builder()
-            .tableName("TodoTable")
+            .tableName(awsProperties.tableName)
             .key(mapOf(
                 "id" to AttributeValue.fromS(UUID.fromString(id).toString())
             ))
@@ -38,7 +39,7 @@ class DynamoDBTodoRepository(
     }
     override fun post(todo: TodoItem) {
         val putItemRequest = PutItemRequest.builder()
-            .tableName("TodoTable")
+            .tableName(awsProperties.tableName)
             .item(todoItemToMap(todo))
             .build()
 

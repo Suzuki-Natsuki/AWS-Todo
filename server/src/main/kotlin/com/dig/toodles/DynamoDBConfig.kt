@@ -20,6 +20,7 @@ class AwsProperties {
     lateinit var accessKey: String
     lateinit var secretKey: String
     lateinit var dynamoDbEndpoint: String
+    lateinit var tableName: String
 }
 
 @Configuration

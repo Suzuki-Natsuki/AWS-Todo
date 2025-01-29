@@ -15,7 +15,10 @@ class DynamoDBTodoRepositoryTest {
 
     @Autowired
     lateinit var dynamoDbClient: DynamoDbClient
-    private val tableName = "TodoTable"
+
+    @Autowired
+    lateinit var awsProperties: AwsProperties
+
 /*
 
 */
@@ -23,10 +26,10 @@ class DynamoDBTodoRepositoryTest {
     fun setupTable() {
         val listTablesResponse = dynamoDbClient.listTables()
 
-        if (!listTablesResponse.tableNames().contains(tableName)) {
+        if (!listTablesResponse.tableNames().contains(awsProperties.tableName)) {
         dynamoDbClient.createTable(
             CreateTableRequest.builder()
-                .tableName(tableName)
+                .tableName(awsProperties.tableName)
                 .keySchema(
                     KeySchemaElement.builder()
                         .attributeName("id")     // パーティションキーの属性名
@@ -53,27 +56,30 @@ class DynamoDBTodoRepositoryTest {
             id = UUID.fromString("12345678-1234-1234-1234-123456789ABC"),
             done = true
         )
-        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+        val repo = DynamoDBTodoRepository(
+            dynamoDbClient,
+            awsProperties
+        )
 
         repo.post(newItem)
-        assertEquals(repo.getAllTodoItem()[0].title, "ほげ");
-        assertEquals(repo.getAllTodoItem()[0].id, UUID.fromString("12345678-1234-1234-1234-123456789ABC"));
-        assertEquals(repo.getAllTodoItem()[0].done, true);
+        assertEquals(repo.getAllTodoItem()[0].title, "ほげ")
+        assertEquals(repo.getAllTodoItem()[0].id, UUID.fromString("12345678-1234-1234-1234-123456789ABC"))
+        assertEquals(repo.getAllTodoItem()[0].done, true)
     }
 
     @Test
     fun `postとgetAllTodoItemできる`() {
         val newItem = TodoItem(title = "ほげ")
-        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+        val repo = DynamoDBTodoRepository(dynamoDbClient, awsProperties)
 
-        assertEquals(repo.getAllTodoItem().size, 0);
+        assertEquals(repo.getAllTodoItem().size, 0)
         repo.post(newItem)
-        assertEquals(repo.getAllTodoItem().size, 1);
+        assertEquals(repo.getAllTodoItem().size, 1)
     }
 
     @Test
     fun `IdでGetできる`() {
-        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+        val repo = DynamoDBTodoRepository(dynamoDbClient, awsProperties)
         val newItems = listOf(
             TodoItem(
                 title = "走る",
@@ -102,13 +108,13 @@ class DynamoDBTodoRepositoryTest {
 
     @Test
     fun `Idがないの時Getは大丈夫`() {
-        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+        val repo = DynamoDBTodoRepository(dynamoDbClient, awsProperties)
         assertEquals(repo.getTodoItemById(UUID.randomUUID().toString()), null)
     }
 
     @Test
     fun `Idを使ってItemを削除する`() {
-        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+        val repo = DynamoDBTodoRepository(dynamoDbClient, awsProperties)
         val newItems = listOf(
             TodoItem(
                 title = "走る",
@@ -131,7 +137,7 @@ class DynamoDBTodoRepositoryTest {
 
     @Test
     fun `deleteしたいidがない時も大丈夫`() {
-        val repo = DynamoDBTodoRepository(client = dynamoDbClient)
+        val repo = DynamoDBTodoRepository(dynamoDbClient, awsProperties)
         val newItem = TodoItem(
             title = "ほげ",
             id = UUID.fromString("12345678-1234-1234-1234-123456789ABC"),
@@ -148,7 +154,7 @@ class DynamoDBTodoRepositoryTest {
     fun cleanupTable() {
         dynamoDbClient.deleteTable(
             DeleteTableRequest.builder()
-                .tableName(tableName)
+                .tableName(awsProperties.tableName)
                 .build()
         )
     }
