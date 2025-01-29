@@ -6,14 +6,17 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
+import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
+import java.net.URI
 import java.util.*
 
 @SpringBootTest
 class DynamoDBTodoRepositoryTest {
 
-    @Autowired
     lateinit var dynamoDbClient: DynamoDbClient
 
     @Autowired
@@ -24,6 +27,14 @@ class DynamoDBTodoRepositoryTest {
 */
     @BeforeEach
     fun setupTable() {
+        val credentials = AwsBasicCredentials.create("xxx", "yyy")
+        val credentialsProvider = StaticCredentialsProvider.create(credentials)
+        dynamoDbClient = DynamoDbClient.builder()
+            .region(Region.of(awsProperties.region))
+            .credentialsProvider(credentialsProvider)
+            .endpointOverride(URI.create(awsProperties.dynamoDbEndpoint))
+            .build()
+
         val listTablesResponse = dynamoDbClient.listTables()
 
         if (!listTablesResponse.tableNames().contains(awsProperties.tableName)) {
