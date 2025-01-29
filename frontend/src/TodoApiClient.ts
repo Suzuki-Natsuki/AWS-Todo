@@ -16,19 +16,39 @@ class TodoApiClient {
             .then(res => res.json())
             .then(json => json.data)
 
-        // return Promise.resolve([])
+        // return Promise.resolve
     }
 
     getTodoItemById(id: string): Promise<TodoItem> {
         return fetch(`${this.apiUrl}/api/todo/${id}`)
             .then(res => res.json())
             .then(json => json.data)
-            .then(data => data.find(todo => todo.id === id))
+            .then(data => data.find((todo: TodoItem) => todo.id === id))
     }
 
-    newTodoItem(newTodo: TodoItem) {
-        throw new Error("TODO")
+    newTodoItem(newTodo: TodoItem): Promise<TodoItem[]> {
+        return fetch(`${this.apiUrl}/api/todo`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newTodo),
+        })
+            .then(res => res.json())
+            .then(json => json.data);
     }
+
+    // newTodoItem(newTodo: TodoItem): Promise<TodoItem[]> {
+    //     return fetch(`${this.apiUrl}/api/todo`, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(newTodo),
+    //     })
+    //         .then(res => res.json())
+    //         .then(json => json.data)
+    // }
 
     deleteItem(id: string) {
         throw new Error("TODO")
