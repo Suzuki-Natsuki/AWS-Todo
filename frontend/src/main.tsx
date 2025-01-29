@@ -6,6 +6,6 @@ import TodoApiClient from "./TodoApiClient.ts";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App apiClient={new TodoApiClient("http://localhost:8080")}/>
+    <App apiClient={new TodoApiClient("")}/>
   </StrictMode>,
 )
