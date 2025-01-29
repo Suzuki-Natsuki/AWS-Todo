@@ -1,4 +1,4 @@
-interface TodoItem {
+export interface TodoItem {
     id: string;
     title: string;
     done: boolean;
@@ -11,51 +11,38 @@ class TodoApiClient {
         this.apiUrl = apiRoot
     }
 
-    getAllTodoItems(): Promise<TodoItem[]> {
+    async getAllTodoItems(): Promise<TodoItem[]> {
         return fetch(`${this.apiUrl}/api/todo`)
-            .then(res => res.json())
-            .then(json => json.data)
-
-        // return Promise.resolve
+          .then(res => res.json())
     }
 
-    getTodoItemById(id: string): Promise<TodoItem> {
+    async getTodoItemById(id: string): Promise<TodoItem> {
         return fetch(`${this.apiUrl}/api/todo/${id}`)
             .then(res => res.json())
-            .then(json => json.data)
-            .then(data => data.find((todo: TodoItem) => todo.id === id))
+            // .then((data: TodoItem) => data.find((todo: TodoItem) => todo.id === id))
     }
 
-    newTodoItem(newTodo: TodoItem): Promise<TodoItem[]> {
+    async deleteItem(id: string): Promise<void> {
+        return fetch(`${this.apiUrl}/api/todo/${id}`, {
+            method: 'DELETE',
+        }).then(() => Promise.resolve())
+    }
+
+    async newTodoItem(newTodo: TodoItem): Promise<void> {
         return fetch(`${this.apiUrl}/api/todo`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(newTodo),
-        })
-            .then(res => res.json())
-            .then(json => json.data);
+            headers: {"Content-Type": "application/json",}
+        }).then(() => Promise.resolve())
     }
 
-    // newTodoItem(newTodo: TodoItem): Promise<TodoItem[]> {
-    //     return fetch(`${this.apiUrl}/api/todo`, {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify(newTodo),
-    //     })
-    //         .then(res => res.json())
-    //         .then(json => json.data)
-    // }
 
-    deleteItem(id: string) {
-        throw new Error("TODO")
-    }
-
-    updateItem(updatedItem: TodoItem) {
-        throw new Error("TODO")
+    async updateItem(updatedItem: TodoItem): Promise<void> {
+        return fetch(`${this.apiUrl}/api/todo`, {
+            method: 'PATCH',
+            body: JSON.stringify(updatedItem),
+            headers: {"Content-Type": "application/json",}
+        }).then(() => Promise.resolve())
     }
 }
 

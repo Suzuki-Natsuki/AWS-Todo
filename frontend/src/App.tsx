@@ -1,33 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import TodoApiClient from "./TodoApiClient.ts";
+import TodoList from "./components/TodoList.tsx";
+import {useEffect, useRef, useState} from "react";
+import {TodoItem} from "./TodoApiClient.ts"
 
-function App() {
-  const [count, setCount] = useState(0)
+interface AppProps {
+  apiClient: TodoApiClient
+}
+function App({apiClient}: AppProps) {
+  const [todoItems, setTodoItems] = useState<TodoItem[]>([])
+
+  useEffect(() => {
+    updateTodoList()
+  }, []);
+
+  const updateTodoList = () => {
+    apiClient.getAllTodoItems().then((todoItems) => setTodoItems(todoItems))
+  }
+
+  const inputRef = useRef<HTMLInputElement>(null)
+  const inputIdRef = useRef<HTMLInputElement>(null)
 
   return (
     <>
+      <TodoList todoItems={todoItems} apiClient={apiClient} setTodoItems={setTodoItems}/>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+          <input role={"newTodoItem"} ref={inputRef}/>
+        <button
+          onClick={() => {
+            const createdItem = {id: self.crypto.randomUUID(), title: inputRef.current!.value, done: false}
+            apiClient.newTodoItem(createdItem).then(() =>{
+              updateTodoList()
+            })
+          }}>
+          SAVE
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div>
+          <input role={"idToDelete"} ref={inputIdRef}/>
+        <button onClick={() => {
+          apiClient.deleteItem(inputIdRef.current!.value).then(() => {
+            updateTodoList()
+          })
+        }}>DELETE</button>
+      </div>
     </>
   )
 }
