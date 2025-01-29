@@ -27,7 +27,6 @@ class DynamodbClient(val awsProperties: AwsProperties) {
     @Bean
     fun dynamoDbClient(env: Environment): DynamoDbClient {
         val dummyCredentials = AwsBasicCredentials.create("xxx", "yyy")
-
         return DynamoDbClient.builder()
             .region(Region.of(awsProperties.region))
             .credentialsProvider(AwsCredentialsProviderChain.of(
