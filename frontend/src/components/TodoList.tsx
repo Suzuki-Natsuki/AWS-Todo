@@ -22,7 +22,7 @@ function TodoList({
         return (
           <div key={item.id}>
             <div>
-              title: {item.title}, done: {String(item.done)}
+              title: {item.title}
             </div>
             <input
               role={item.id}
