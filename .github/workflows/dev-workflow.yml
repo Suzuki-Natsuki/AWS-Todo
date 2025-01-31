@@ -9,6 +9,18 @@ jobs:
   frontend-unit-test:
     runs-on: ubuntu-latest
     steps:
-      - name: check
+      - name: log
         run: |
-          echo "Hello World"
+          echo "Hello Frontend Unit Test World"
+  backend-unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: log
+        run: |
+          echo "Hello Backend Unit Test World"
+  build-app-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: log
+        run: |
+          echo "frontend and backend build create image"
