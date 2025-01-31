@@ -1,0 +1,13 @@
+name: Todo App Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  runs-on: ubuntu-latest
+  steps:
+    - name: check
+      run: |
+        echo "Hello World"
