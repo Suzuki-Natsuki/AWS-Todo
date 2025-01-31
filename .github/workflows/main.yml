@@ -1,0 +1,6 @@
+name: Todo App Pipeline
+
+on:
+  push:
+    branches:
+    - main
