@@ -1,0 +1,11 @@
+.item {
+    width: 200px;
+    display: flex;
+    background-color: lightblue;
+    padding: 5px;
+    border: solid white 1px;
+}
+
+.title {
+    width: 1900px;
+}
