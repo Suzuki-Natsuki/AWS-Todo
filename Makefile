@@ -6,7 +6,7 @@ image-build: backend-build
 	cd server; docker build -t $(IMAGE) .
 
 backend-build: frontend-build backend-clean
-	cd server; ./gradlew build;
+	cd server; ./gradlew build -x test; # backendのtestをスキップ（GitHub actionsで実行）
 
 backend-clean:
 	cd server; rm -rf build
