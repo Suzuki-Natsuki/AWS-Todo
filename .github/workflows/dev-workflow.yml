@@ -20,6 +20,9 @@ jobs:
           echo "Hello Backend Unit Test World"
   build-app-image:
     runs-on: ubuntu-latest
+    needs:
+      - frontend-unit-test
+      - backend-unit-test
     steps:
       - name: log
         run: |
