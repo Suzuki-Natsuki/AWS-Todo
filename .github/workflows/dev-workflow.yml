@@ -11,7 +11,8 @@ jobs:
     steps:
       - name: log
         run: |
-          echo "Hello Frontend Unit Test World"
+          ls -al
+          node -v
   backend-unit-test:
     runs-on: ubuntu-latest
     steps:
