@@ -20,6 +20,10 @@ class AwsProperties {
     lateinit var region: String
     lateinit var dynamoDbEndpoint: String
     lateinit var tableName: String
+
+    override fun toString(): String {
+        return "AwsProperties(region='$region', dynamoDbEndpoint='$dynamoDbEndpoint', tableName='$tableName')"
+    }
 }
 
 @Configuration
@@ -29,10 +33,12 @@ class DynamodbClient(val awsProperties: AwsProperties) {
         val dummyCredentials = AwsBasicCredentials.create("xxx", "yyy")
         return DynamoDbClient.builder()
             .region(Region.of(awsProperties.region))
-            .credentialsProvider(AwsCredentialsProviderChain.of(
-                DefaultCredentialsProvider.create(),
-                StaticCredentialsProvider.create(dummyCredentials)
-            ))
+            .credentialsProvider(
+                AwsCredentialsProviderChain.of(
+                    DefaultCredentialsProvider.create(),
+                    StaticCredentialsProvider.create(dummyCredentials)
+                )
+            )
             .endpointOverride(URI.create(awsProperties.dynamoDbEndpoint))
             .build()
     }

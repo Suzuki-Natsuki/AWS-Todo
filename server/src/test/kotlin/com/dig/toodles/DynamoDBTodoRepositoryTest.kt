@@ -6,6 +6,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.localstack.LocalStackContainer
+import org.testcontainers.utility.DockerImageName
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.regions.Region
@@ -22,11 +26,33 @@ class DynamoDBTodoRepositoryTest {
     @Autowired
     lateinit var awsProperties: AwsProperties
 
-/*
+    companion object {
+        // setup test container
+        var localstack = LocalStackContainer(
+            DockerImageName.parse("localstack/localstack:latest")
+        ).withServices(LocalStackContainer.Service.DYNAMODB)
 
-*/
+        init {
+            // 1
+            localstack.start()
+        }
+
+        @DynamicPropertySource
+        @JvmStatic
+        fun registerDynamoDbProperties(registry: DynamicPropertyRegistry) {
+            // 2
+            registry.add("aws.dynamoDbEndpoint") {
+                "http://localhost:${localstack.getMappedPort(4566)}"
+            }
+        }
+    }
+
+    /*
+
+    */
     @BeforeEach
     fun setupTable() {
+        println("setupTable() - $awsProperties")
         val credentials = AwsBasicCredentials.create("xxx", "yyy")
         val credentialsProvider = StaticCredentialsProvider.create(credentials)
         dynamoDbClient = DynamoDbClient.builder()
@@ -38,24 +64,24 @@ class DynamoDBTodoRepositoryTest {
         val listTablesResponse = dynamoDbClient.listTables()
 
         if (!listTablesResponse.tableNames().contains(awsProperties.tableName)) {
-        dynamoDbClient.createTable(
-            CreateTableRequest.builder()
-                .tableName(awsProperties.tableName)
-                .keySchema(
-                    KeySchemaElement.builder()
-                        .attributeName("id")     // パーティションキーの属性名
-                        .keyType(KeyType.HASH)   // HASH = パーティションキー
-                        .build()
-                )
-                .attributeDefinitions(
-                    AttributeDefinition.builder()
-                        .attributeName("id")           // 上記と同じキー名
-                        .attributeType(ScalarAttributeType.S)  // S=String
-                        .build()
-                )
-                .billingMode(BillingMode.PAY_PER_REQUEST)
-                .build()
-        )
+            dynamoDbClient.createTable(
+                CreateTableRequest.builder()
+                    .tableName(awsProperties.tableName)
+                    .keySchema(
+                        KeySchemaElement.builder()
+                            .attributeName("id")     // パーティションキーの属性名
+                            .keyType(KeyType.HASH)   // HASH = パーティションキー
+                            .build()
+                    )
+                    .attributeDefinitions(
+                        AttributeDefinition.builder()
+                            .attributeName("id")           // 上記と同じキー名
+                            .attributeType(ScalarAttributeType.S)  // S=String
+                            .build()
+                    )
+                    .billingMode(BillingMode.PAY_PER_REQUEST)
+                    .build()
+            )
         }
 
     }
@@ -108,9 +134,9 @@ class DynamoDBTodoRepositoryTest {
                 done = true
             ),
 
-        )
+            )
 
-        newItems.forEach {repo.post(it)}
+        newItems.forEach { repo.post(it) }
         assertEquals(repo.getTodoItemById("119846CB-D49F-4DAA-A129-3C18FC6347E2"), newItems[0])
         assertEquals(repo.getTodoItemById("65B1217A-FFA6-401D-AB73-0BC4DB9A2C0F"), newItems[1])
         assertEquals(repo.getTodoItemById("B12F259C-6D92-473B-AAB7-58694AA15361"), newItems[2])
@@ -138,7 +164,7 @@ class DynamoDBTodoRepositoryTest {
                 done = true
             ),
         )
-        newItems.forEach {repo.post(it)}
+        newItems.forEach { repo.post(it) }
         assertEquals(repo.getAllTodoItem().size, 2)
 
         repo.delete(newItems[0].id.toString())

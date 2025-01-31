@@ -38,6 +38,10 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.2.0") // inlineではない
 	// ---- (JUnit5などのテストライブラリ) ----
 	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:localstack:1.20.4")
+
 }
 
 kotlin {
