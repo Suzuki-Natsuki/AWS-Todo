@@ -56,7 +56,7 @@ jobs:
             -p 4510-4559:4510-4559\
             -e DYNAMODB_SHARE_DB=1\
             -v ./init:/etc/localstack/init/ready.d\
-            -i localstack/localstack
+            localstack/localstack
           cd server
           ./gradlew test
   build-app-image:
