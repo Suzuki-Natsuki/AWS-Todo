@@ -51,6 +51,7 @@ jobs:
       - name: Backend Unit Test
         run: |
           docker run --rm\
+            -d\
             -p 4566:4566\
             -p 4510-4559:4510-4559\
             -e DYNAMODB_SHARE_DB=1\
