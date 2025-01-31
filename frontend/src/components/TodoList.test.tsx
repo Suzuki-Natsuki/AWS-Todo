@@ -29,7 +29,7 @@ describe("<TodoList />", () => {
       />,
     );
 
-    expect(screen.getByText(todoItems[0].title)).toBeInTheDocument();
+    expect(screen.getByText(`title: ${todoItems[0].title}`)).toBeInTheDocument();
   });
 
   it("複数のTodoItemが正しく表示される", () => {
@@ -53,7 +53,7 @@ describe("<TodoList />", () => {
       />,
     );
 
-    expect(screen.getByText(todoItems[0].title)).toBeInTheDocument();
-    expect(screen.getByText(todoItems[1].title)).toBeInTheDocument();
+    expect(screen.getByText(`title: ${todoItems[0].title}`)).toBeInTheDocument();
+    expect(screen.getByText(`title: ${todoItems[1].title}`)).toBeInTheDocument();
   });
 });
