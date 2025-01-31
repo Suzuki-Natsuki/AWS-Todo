@@ -76,8 +76,5 @@ jobs:
             frontend/package-lock.json
       - name: run makefile
         run: |
-          ls frontend
-          cd frontend 
-          npm i
           make IMAGE=tora/todo
 

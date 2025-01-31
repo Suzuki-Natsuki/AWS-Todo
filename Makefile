@@ -11,7 +11,7 @@ backend-build: frontend-build backend-clean
 backend-clean:
 	cd server; rm -rf build
 
-frontend-build: frontend-clean
+frontend-build: frontend-clean frontend-npm-install
 	cd frontend; npm run build;
 	mv frontend/dist server/src/main/resources/static
 
@@ -19,4 +19,5 @@ frontend-clean:
 	cd frontend; rm -rf dist;
 	cd server/src/main/resources; rm -rf static
 
-
+frontend-npm-install:
+	cd frontend; npm i;
