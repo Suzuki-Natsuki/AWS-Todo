@@ -6,8 +6,9 @@ on:
       - main
 
 jobs:
-  runs-on: ubuntu-latest
-  steps:
-    - name: check
-      run: |
-        echo "Hello World"
+  frontend-unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check
+        run: |
+          echo "Hello World"
