@@ -65,6 +65,8 @@ jobs:
       - frontend-unit-test
       - backend-unit-test
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: build image
         uses: actions/setup-node@v4
         with:
