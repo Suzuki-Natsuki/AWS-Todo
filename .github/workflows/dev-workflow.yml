@@ -50,7 +50,13 @@ jobs:
             server/**/gradle-wrapper.properties
       - name: Backend Unit Test
         run: |
-          docker-compose up
+          docker run --rm\
+            -it\
+            -p 4566:4566\
+            -p 4510-4559:4510-4559\
+            -e DYNAMODB_SHARE_DB=1\
+            -v ./init:/etc/localstack/init/ready.d\
+            localstack/localstack
           cd server
           ./gradlew test
   build-app-image:
