@@ -50,6 +50,7 @@ jobs:
             server/**/gradle-wrapper.properties
       - name: Backend Unit Test
         run: |
+          docker-compose up
           cd server
           ./gradlew test
   build-app-image:
